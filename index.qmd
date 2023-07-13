@@ -1,0 +1,214 @@
+---
+format:
+  revealjs:
+    incremental: false
+execute: 
+  echo: true
+---
+
+# Translations at The Carpentries
+
+Joel Nitta  
+Chiba University  
+<https://www.joelnitta.com>
+
+## What is The Carpentries?
+
+:::: {.columns}
+
+::: {.column width="25%"}
+- A non-profit supporting **free** (or very low cost) workshops to learn best practices for **research computing**
+:::
+
+::: {.column width="75%"}
+![](https://bio5.org/sites/default/files/styles/az_card_image/public/2019-09/P1390520.jpg?itok=6azSx3JI){fig-alt="Photograph of a Carpentries workshop with participants at their computers and instructors standing"}
+:::
+
+::::
+
+## Example Carpentries lesson
+
+![<https://carpentries-incubator.github.io/targets-workshop>](images/targets_lesson.png){fig-alt="Screenshot of Carpentries lesson"}
+
+## How to translate?
+
+:::: {.columns}
+
+::: {.column width="80%"}
+- **Not as simple** as just re-writing text in another language as if translating a novel
+
+- Carpentries lessons are **technical documents** (rendered using software) and therefore present **unique challenges**
+
+:::
+
+::: {.column width="20%"}
+![](images/Translation-icon.png){fig-alt="Symbol of letter A translated to Japanese hiragana " height="150"}
+:::
+
+::::
+
+## Challenges in technical translation
+
+- Need to be able to
+  - **update translation when original changes**
+  - **deal with source code vs. rendered version**
+
+- (I am focusing on translating lessons, i.e., teaching materials. Translating contents of R packages is a different matter.)
+
+## Example Carpentries lesson (again)
+
+![<https://carpentries-incubator.github.io/targets-workshop/basic-targets.html#run-the-workflow>](images/targets_lesson.png){fig-alt="Screenshot of Carpentries lesson"}
+
+## Example Carpentries lesson (code)
+
+![<https://github.com/joelnitta/targets-workshop/blob/4588d719f590d134aea783152cd1bd4c7695f012/episodes/basic-targets.Rmd#L235>](images/targets_lesson_code.png){fig-alt="Screenshot of Carpentries lesson code"}
+
+## What is technical translation anyways?
+
+:::: {.columns}
+
+::: {.column width="80%"}
+Two aspects:
+
+- internationalization (`i18n`): Providing the **framework** to support translation (requires **technical knowledge**)
+
+- localization (`l10n`): Actually translating strings (requires **linguistic knowlege**)
+:::
+
+::: {.column width="20%"}
+![](https://2.bp.blogspot.com/-3BjcJgshUfo/V-xj68Q5enI/AAAAAAAA-Ik/7APxh7q8dgMwjIkt_BJB4N3VeElIgfH7wCLcB/s300/earth_africa_europe.png){fig-alt="Globes with different continents at center" width="200"}
+:::
+
+::::
+
+## Past approach ("Styles" format)
+
+- The old Carpentries lesson format is called the **"Styles" format**
+
+- The Styles format is based on [Jekyll](https://jekyllrb.com/) (and some other tools)
+
+- Translation system^[Handbook: [https://carpentries-i18n-handbook.readthedocs.io/](https://carpentries-i18n-handbook.readthedocs.io/)] designed by David Pérez-Suárez used a tool called [PO4gitbook](https://github.com/darkcircle/po4gitbook)
+
+## Past approach ("Styles" format)
+
+::: {.center}
+![](https://carpentries.org/images/blog/2022/01/2022-01-31-python-choice-old.png){fig-alt="Programming With Python built with the Styles template on 2022-01-27" height="600"}
+:::
+
+## Past approach ("Styles" format)
+
+- All translations controlled from a central repo\* with submodules for each lesson
+
+- Rendering not straightforward
+  - (most) Translators can't "preview" lesson
+
+- Various methods used to localize
+  - transifex (cloud-based)
+  - POedit (local text editor)
+  - github (online code review; used by JA community)
+
+::: aside
+\*i18n repo: <https://github.com/carpentries-i18n/i18n>
+:::
+
+## New approach ("Workbench" format)
+
+:::: {.columns}
+
+::: {.column width="80%"}
+- The upcoming Carpentries lesson format is called [**"Workbench"**](https://carpentries.org/blog/2022/01/live-lesson-infrastructure/), developed by Zhian Kamvar
+
+- The Workbench format is based on **R** and **pandoc**-flavoured markdown
+  - Rendering of lessons is **greatly simplified**
+
+:::{.fragment}
+- I am developing an R package to facilitate translating with the Workbench format called [dovetail](https://github.com/joelnitta/dovetail)
+:::
+
+:::
+
+::: {.column width="20%"}
+[![](https://carpentries.github.io/sandpaper/logo.png){fig-alt="sandpaper R package logo"}](https://carpentries.github.io/sandpaper/)
+
+:::
+
+::::
+
+## `dovetail`
+
+- Each translation is **contained within each lesson**^[For now; may change in the future]
+
+- Rendering is **easily accomplished locally** by the translator
+
+- Plan to have a standard system for localization (e.g., pushing/pulling from [crowdin](https://crowdin.com/))
+
+::: aside
+[https://github.com/joelnitta/dovetail](https://github.com/joelnitta/dovetail)
+:::
+
+
+## `dovetail`
+
+```r
+library(dovetail)
+
+# Copy (untranslated) files needed for rendering lesson
+create_locale("ja")
+
+# Create PO files ----
+create_po_for_locale("ja")
+
+# Edit PO files ----
+# for example, with
+# usethis::edit_file("po/ja/01-introduction.po")
+
+# Translate md files ----
+# translate all (R)md files at once to `./locale/{lang}/`
+translate_md_for_locale("ja")
+
+# Build translated lesson ----
+sandpaper::build_lesson("locale/ja/")
+```
+
+## `dovetail`
+
+Output of translation
+
+```
+|-- CONTRIBUTING.md             # - Carpentries Rules for Contributions
+|-- README.md                   # - Describes lesson
+...
+|-- po                          # - NEW, contains PO files for translation
+|   `-- ja/                     
+|       |-- 00-introducition.po 
+|       |-- CONTRIBUTING.po     
+|       |...                    
+|-- locale                      # - NEW, contains translated files
+|   `-- ja/                     
+|       |-- CONTRIBUTING.md     # - NEW, translated markdown files
+|       |-- site/               # - NEW, translated, rendered site
+|           |-- built/          
+|           |...               
+```
+
+## `dovetail` design philosophy
+
+- Make it easier for maintainer to maintain (`i18n`)
+  - **Not dependent on one person** maintaining one central repo
+
+- Make it easier for translators to translate (`l10n`)
+  - Requires **minimal technical knowlege** to participate (don't need git)
+
+## Promote participation in Carpentries by translating!
+
+:::: {.columns}
+
+::: {.column width="80%"}
+- By making translation (`l10n`) simple, we can **encourage participation** and **grow local communities**
+:::
+
+::: {.column width="20%"}
+![](https://2.bp.blogspot.com/-aUf0uI4Zsqw/U3v3Io9TvFI/AAAAAAAAgoY/dVk5zRcP0Cs/s100/tree_seichou02.png){fig-alt="Sprouting plant" height="150"}
+:::
+
+::::
