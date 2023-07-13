@@ -10,7 +10,8 @@ execute:
 
 Joel Nitta  
 Chiba University  
-<https://www.joelnitta.com>
+<https://www.joelnitta.com>  
+<https://joelnitta.github.io/bioc_cab_2023-07-14>
 
 ## What is The Carpentries?
 
@@ -92,7 +93,7 @@ Two aspects:
 ## Past approach ("Styles" format)
 
 ::: {.center}
-![](https://carpentries.org/images/blog/2022/01/2022-01-31-python-choice-old.png){fig-alt="Programming With Python built with the Styles template on 2022-01-27" height="600"}
+![](images/r-lesson-ja.png){fig-alt="R lesson in Japanese" height="600"}
 :::
 
 ## Past approach ("Styles" format)
